@@ -1,0 +1,234 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)}
+.wrap{padding:1.5rem 0;max-width:680px}
+.row{margin-bottom:1.25rem}
+label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500}
+input,textarea,select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);font-size:14px;font-family:inherit;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--color-border-primary)}
+.two-col{display:grid;grid-template-columns:120px 1fr;gap:12px}
+.slug{font-size:12px;color:var(--color-text-secondary);margin-top:6px;font-family:monospace;padding:6px 8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);min-height:28px;word-break:break-all}
+.section-divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.5rem 0}
+.screenshots-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.screenshot-row{display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;align-items:center}
+.screenshot-row input{margin:0}
+.remove-btn{width:28px;height:28px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.remove-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.add-btn{margin-top:8px;font-size:13px;padding:6px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.add-btn:hover{background:var(--color-background-secondary)}
+.preview-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;color:var(--color-text-primary);max-height:320px;overflow-y:auto;line-height:1.6}
+.actions{display:flex;gap:10px;margin-top:1.25rem;flex-wrap:wrap}
+.dl-btn{padding:8px 18px;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)}
+.dl-btn.primary{background:#0d9488;color:white;border-color:#0d9488}
+.dl-btn:hover{opacity:0.85}
+.filenames-box{margin-top:1rem}
+.filename-chip{display:inline-block;font-family:monospace;font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:4px 8px;margin:3px 3px 3px 0;color:var(--color-text-secondary)}
+.col-hdr{font-size:11px;color:var(--color-text-secondary);font-weight:500;margin-bottom:4px}
+</style>
+
+<div class="wrap">
+
+<div class="row two-col">
+  <div>
+    <label>Defect number</label>
+    <input id="defNum" type="number" min="1" max="999" value="1" oninput="update()">
+  </div>
+  <div>
+    <label>Short title (no spaces)</label>
+    <input id="defTitle" type="text" placeholder="header-overlap" oninput="update()">
+  </div>
+</div>
+
+<div class="row">
+  <label>Ticket filename</label>
+  <div class="slug" id="ticketSlug">DEF-001-header-overlap.md</div>
+</div>
+
+<hr class="section-divider">
+
+<div class="row">
+  <label>Page / tab affected</label>
+  <input id="pageAffected" type="text" placeholder="e.g. Summary tab, Add modal on Vendor Costs" oninput="update()">
+</div>
+
+<div class="row">
+  <label>Description</label>
+  <textarea id="description" rows="3" placeholder="What is wrong, where you see it, and what you expected instead" oninput="update()"></textarea>
+</div>
+
+<div class="row">
+  <label>Steps to reproduce</label>
+  <textarea id="steps" rows="3" placeholder="1. Open the app&#10;2. Navigate to...&#10;3. You see X instead of Y" oninput="update()"></textarea>
+</div>
+
+<div class="row">
+  <label>Console errors</label>
+  <textarea id="console" rows="2" placeholder="Paste errors here, or leave blank" oninput="update()"></textarea>
+</div>
+
+<hr class="section-divider">
+
+<div class="row">
+  <label>Screenshots</label>
+  <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;margin-bottom:4px">
+    <div class="col-hdr">Label / description</div>
+    <div class="col-hdr">Generated filename</div>
+    <div></div>
+  </div>
+  <div class="screenshots-list" id="screenshotList"></div>
+  <button class="add-btn" onclick="addScreenshot()">+ Add screenshot</button>
+</div>
+
+<hr class="section-divider">
+
+<div class="row">
+  <label>Ticket preview</label>
+  <div class="preview-box" id="preview"></div>
+</div>
+
+<div class="filenames-box" id="filenamesBox"></div>
+
+<div class="actions">
+  <button class="dl-btn primary" onclick="downloadTicket()">Download ticket .md</button>
+  <button class="dl-btn" onclick="copyTicket()">Copy to clipboard</button>
+</div>
+
+</div>
+
+<script>
+let screenshots = [{label:'', generated:''}];
+
+function slug(str){
+  return str.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function pad(n){
+  return String(n).padStart(3,'0');
+}
+
+function getPrefix(){
+  const num = pad(parseInt(document.getElementById('defNum').value)||1);
+  const title = slug(document.getElementById('defTitle').value||'defect');
+  return 'DEF-'+num+'-'+title;
+}
+
+function updateScreenshotFilenames(){
+  const prefix = getPrefix();
+  screenshots.forEach((s,i)=>{
+    const lbl = s.label ? slug(s.label) : 'screenshot-'+(i+1);
+    s.generated = prefix+'-'+lbl+'.png';
+  });
+}
+
+function renderScreenshotList(){
+  const list = document.getElementById('screenshotList');
+  list.innerHTML='';
+  screenshots.forEach((s,i)=>{
+    const row = document.createElement('div');
+    row.className='screenshot-row';
+    row.innerHTML=`
+      <input type="text" placeholder="e.g. header overlap visible" value="${s.label}" oninput="screenshots[${i}].label=this.value;update()">
+      <div class="slug" style="margin:0;font-size:11px">${s.generated||'—'}</div>
+      <button class="remove-btn" onclick="removeScreenshot(${i})">×</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function addScreenshot(){
+  screenshots.push({label:'',generated:''});
+  update();
+}
+
+function removeScreenshot(i){
+  if(screenshots.length===1){screenshots[0]={label:'',generated:''};update();return;}
+  screenshots.splice(i,1);
+  update();
+}
+
+function buildMarkdown(){
+  const prefix = getPrefix();
+  const num = pad(parseInt(document.getElementById('defNum').value)||1);
+  const titleRaw = document.getElementById('defTitle').value||'defect';
+  const page = document.getElementById('pageAffected').value||'[not specified]';
+  const desc = document.getElementById('description').value||'[not specified]';
+  const stepsRaw = document.getElementById('steps').value;
+  const consoleRaw = document.getElementById('console').value;
+
+  const stepsLines = stepsRaw.trim()
+    ? stepsRaw.split('\n').filter(l=>l.trim()).map((l,i)=>{
+        const clean = l.replace(/^\d+\.\s*/,'');
+        return (i+1)+'. '+clean;
+      }).join('\n')
+    : '1. [Add steps]';
+
+  const screenshotLines = screenshots.filter(s=>s.generated).map(s=>{
+    const lbl = s.label||'screenshot';
+    return '- '+s.generated+' — '+lbl;
+  });
+  const screenshotSection = screenshotLines.length ? screenshotLines.join('\n') : 'none';
+
+  const consoleTxt = consoleRaw.trim()||'none';
+
+  return `# Defect Ticket — DEF-${num} ${titleRaw.replace(/-/g,' ')}
+
+## Description
+
+${desc}
+
+## Page / tab affected
+
+${page}
+
+## Screenshots
+
+${screenshotSection}
+
+## Console errors
+
+${consoleTxt}
+
+## Steps to reproduce
+
+${stepsLines}
+`;
+}
+
+function update(){
+  updateScreenshotFilenames();
+  renderScreenshotList();
+
+  const prefix = getPrefix();
+  document.getElementById('ticketSlug').textContent = prefix+'.md';
+
+  const md = buildMarkdown();
+  document.getElementById('preview').textContent = md;
+
+  const box = document.getElementById('filenamesBox');
+  const chips = screenshots.filter(s=>s.generated).map(s=>`<span class="filename-chip">${s.generated}</span>`).join('');
+  box.innerHTML = chips ? '<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Rename your PNG files to match:</div>'+chips : '';
+}
+
+function downloadTicket(){
+  const prefix = getPrefix();
+  const md = buildMarkdown();
+  const blob = new Blob([md],{type:'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = prefix+'.md';
+  a.click();
+}
+
+function copyTicket(){
+  const md = buildMarkdown();
+  navigator.clipboard.writeText(md).then(()=>{
+    const btn = document.querySelector('.dl-btn:not(.primary)');
+    const orig = btn.textContent;
+    btn.textContent='Copied';
+    setTimeout(()=>btn.textContent=orig,1500);
+  });
+}
+
+update();
+</script>
