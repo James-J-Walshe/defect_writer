@@ -427,6 +427,154 @@
     color: var(--zinc-400);
     margin-bottom: 10px;
   }
+
+  /* Settings bar */
+  .settings-bar {
+    background: white;
+    border-bottom: 1px solid var(--zinc-200);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  .settings-bar.open { max-height: 200px; }
+  .settings-bar-inner {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 16px;
+    align-items: end;
+    padding: 16px 32px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .settings-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .settings-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--zinc-300);
+    flex-shrink: 0;
+  }
+  .settings-dot.ok { background: #22c55e; }
+  .settings-dot.err { background: #ef4444; }
+  .settings-status-text { font-size: 11px; color: var(--zinc-500); }
+
+  /* Header settings btn */
+  .hdr-settings-btn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 30px;
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--zinc-600);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .hdr-settings-btn:hover { background: var(--zinc-50); border-color: var(--zinc-300); }
+  .hdr-settings-btn.active { background: var(--brand-light); border-color: var(--brand); color: var(--brand); }
+  .hdr-settings-btn svg { width: 14px; height: 14px; }
+
+  /* AI result panel */
+  .ai-result {
+    border: 1px solid var(--zinc-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: none;
+    margin-top: 0;
+  }
+  .ai-result.visible { display: block; }
+  .ai-result-header {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .ai-result-header.pass { background: #f0fdf4; border-bottom: 1px solid #bbf7d0; color: #166534; }
+  .ai-result-header.warn { background: #fffbeb; border-bottom: 1px solid #fde68a; color: #92400e; }
+  .ai-result-header.err  { background: #fef2f2; border-bottom: 1px solid #fecaca; color: #991b1b; }
+  .ai-result-header svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .ai-result-body { padding: 14px 16px; background: white; }
+  .ai-score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--zinc-100);
+  }
+  .ai-score-label { font-size: 11px; color: var(--zinc-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .ai-score-value { font-size: 22px; font-weight: 700; }
+  .ai-score-value.high { color: #16a34a; }
+  .ai-score-value.mid  { color: #d97706; }
+  .ai-score-value.low  { color: #dc2626; }
+  .ai-issues { display: flex; flex-direction: column; gap: 6px; }
+  .ai-issue {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .ai-issue.issue      { background: #fffbeb; color: #78350f; }
+  .ai-issue.suggestion { background: var(--zinc-50); color: var(--zinc-700); }
+  .ai-issue.ok         { background: #f0fdf4; color: #166534; }
+  .ai-issue-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+  .ai-summary-text { font-size: 12px; color: var(--zinc-600); line-height: 1.6; margin-top: 10px; }
+
+  /* AI check button */
+  .btn-ai {
+    background: #1d4ed8;
+    color: white;
+    border-color: #1d4ed8;
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-ai:hover { background: #1e40af; border-color: #1e40af; }
+  .btn-ai:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .spinner {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Warning badge on download button */
+  .btn-wrap { position: relative; display: flex; flex: 1; }
+  .btn-wrap .btn { flex: 1; }
+  .warn-badge {
+    position: absolute;
+    top: -7px; right: -7px;
+    width: 17px; height: 17px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .warn-badge.visible { display: flex; }
 </style>
 </head>
 <body>
@@ -438,7 +586,35 @@
   <span class="app-title">Zyantik</span>
   <div class="app-divider"></div>
   <span class="app-subtitle">Defect Ticket Generator</span>
+  <button class="hdr-settings-btn" id="settingsToggle" onclick="toggleSettings()">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 01-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 01-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 01.52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 011.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 011.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 01.52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 01-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 01-1.255-.52l-.094-.319zm-2.633.283a.873.873 0 011.674 0l.094.319a1.873 1.873 0 002.693 1.115l.291-.16a.873.873 0 011.198 1.198l-.16.292a1.873 1.873 0 001.116 2.692l.318.094a.873.873 0 010 1.674l-.319.094a1.873 1.873 0 00-1.115 2.693l.16.291a.873.873 0 01-1.198 1.198l-.292-.16a1.873 1.873 0 00-2.692 1.116l-.094.318a.873.873 0 01-1.674 0l-.094-.319a1.873 1.873 0 00-2.693-1.115l-.291.16a.873.873 0 01-1.198-1.198l.16-.292a1.873 1.873 0 00-1.116-2.692l-.318-.094a.873.873 0 010-1.674l.319-.094A1.873 1.873 0 003.06 4.377l-.16-.292a.873.873 0 011.198-1.198l.292.16a1.873 1.873 0 002.692-1.116l.094-.318zM8 5.754a2.246 2.246 0 100 4.492 2.246 2.246 0 000-4.492z"/></svg>
+    AI Settings
+  </button>
 </header>
+
+<!-- Settings bar (collapsible) -->
+<div class="settings-bar" id="settingsBar">
+  <div class="settings-bar-inner">
+    <div>
+      <div class="field" style="margin-bottom:8px">
+        <label>Anthropic API key</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-..." oninput="saveSettings()" style="font-family:monospace;letter-spacing:0.05em">
+      </div>
+      <div class="settings-status">
+        <div class="settings-dot" id="settingsDot"></div>
+        <span class="settings-status-text" id="settingsStatusText">Enter your API key to enable AI quality check</span>
+      </div>
+    </div>
+    <div>
+      <label>Model</label>
+      <select id="modelSelect" onchange="saveSettings()">
+        <option value="claude-sonnet-4-5">Claude Sonnet 4.5 (recommended)</option>
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (faster)</option>
+        <option value="claude-opus-4-5">Claude Opus 4.5 (most thorough)</option>
+      </select>
+    </div>
+  </div>
+</div>
 
 <div class="page">
 
@@ -532,11 +708,35 @@
       </div>
       <div class="preview-box" id="preview"></div>
       <div class="filename-chips" id="filenameChips"></div>
+
+      <!-- AI check result panel -->
+      <div class="ai-result" id="aiResult">
+        <div class="ai-result-header" id="aiResultHeader">
+          <svg id="aiResultIcon" viewBox="0 0 16 16" fill="currentColor"></svg>
+          <span id="aiResultTitle"></span>
+        </div>
+        <div class="ai-result-body">
+          <div class="ai-score-row">
+            <span class="ai-score-label">Quality score</span>
+            <span class="ai-score-value" id="aiScore"></span>
+          </div>
+          <div class="ai-issues" id="aiIssues"></div>
+          <div class="ai-summary-text" id="aiSummary"></div>
+        </div>
+      </div>
+
       <div class="actions">
-        <button class="btn btn-primary" onclick="downloadAll()">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a1 1 0 011 1v6.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L7 8.586V2a1 1 0 011-1zM3 13a1 1 0 000 2h10a1 1 0 000-2H3z"/></svg>
-          Download ticket + images
+        <button class="btn btn-ai" id="aiCheckBtn" onclick="runAiCheck()">
+          <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm-.75 2.5v3.25l2.5 1.5.5-.87-2-1.2V5.5h-1z"/></svg>
+          Run AI check
         </button>
+        <div class="btn-wrap">
+          <button class="btn btn-primary" id="downloadBtn" onclick="downloadAll()">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a1 1 0 011 1v6.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L7 8.586V2a1 1 0 011-1zM3 13a1 1 0 000 2h10a1 1 0 000-2H3z"/></svg>
+            Download
+          </button>
+          <div class="warn-badge" id="warnBadge"></div>
+        </div>
         <button class="btn" onclick="copyTicket()" title="Copy markdown">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2a2 2 0 00-2 2v8a2 2 0 002 2h5a2 2 0 002-2V8l-4-4H4zm5 0l4 4h-3a1 1 0 01-1-1V2zM6 6a1 1 0 000 2h4a1 1 0 000-2H6zm0 3a1 1 0 000 2h3a1 1 0 000-2H6z"/></svg>
         </button>
@@ -863,7 +1063,177 @@ ${stepsLines}
     }
   });
 
+  // ── Settings ─────────────────────────────────────────────────────────────
+
+  function toggleSettings() {
+    const bar = document.getElementById('settingsBar');
+    const btn = document.getElementById('settingsToggle');
+    const open = bar.classList.toggle('open');
+    btn.classList.toggle('active', open);
+  }
+
+  function saveSettings() {
+    const key = document.getElementById('apiKey').value.trim();
+    const model = document.getElementById('modelSelect').value;
+    localStorage.setItem('zyantik_api_key', key);
+    localStorage.setItem('zyantik_model', model);
+    updateSettingsStatus(key);
+  }
+
+  function loadSettings() {
+    const key = localStorage.getItem('zyantik_api_key') || '';
+    const model = localStorage.getItem('zyantik_model') || 'claude-sonnet-4-5';
+    document.getElementById('apiKey').value = key;
+    document.getElementById('modelSelect').value = model;
+    updateSettingsStatus(key);
+  }
+
+  function updateSettingsStatus(key) {
+    const dot = document.getElementById('settingsDot');
+    const text = document.getElementById('settingsStatusText');
+    const btn = document.getElementById('aiCheckBtn');
+    if (key && key.startsWith('sk-ant-')) {
+      dot.className = 'settings-dot ok';
+      text.textContent = 'API key configured — AI check enabled';
+      btn.disabled = false;
+    } else if (key) {
+      dot.className = 'settings-dot err';
+      text.textContent = 'Key format looks incorrect — should start with sk-ant-';
+      btn.disabled = true;
+    } else {
+      dot.className = 'settings-dot';
+      text.textContent = 'Enter your API key to enable AI quality check';
+      btn.disabled = true;
+    }
+  }
+
+  // ── AI quality check ─────────────────────────────────────────────────────
+
+  async function runAiCheck() {
+    const key = localStorage.getItem('zyantik_api_key') || '';
+    if (!key) { showToast('Add your API key in AI Settings first'); return; }
+
+    const btn = document.getElementById('aiCheckBtn');
+    btn.innerHTML = '<div class="spinner"></div> Checking…';
+    btn.disabled = true;
+
+    const md = buildMarkdown();
+    const hasScreenshots = screenshots.some(s => s.imageDataUrl);
+
+    const prompt = `You are a quality reviewer for software defect tickets that will be processed by an AI agent pipeline. Review this defect ticket and evaluate its quality.
+
+DEFECT TICKET:
+${md}
+
+SCREENSHOTS ATTACHED: ${hasScreenshots ? 'Yes (' + screenshots.filter(s => s.imageDataUrl).length + ' image(s))' : 'No'}
+
+Evaluate the ticket on these criteria:
+1. Description clarity — is the defect specific and unambiguous?
+2. Page/tab specified — does the agent know exactly where to look?
+3. Steps to reproduce — are they present, sequential and complete?
+4. Expected vs actual behaviour — is it clear what should happen vs what does?
+5. Screenshot quality — are images attached and labels meaningful?
+6. Agent actionability — can an AI agent act on this without asking follow-up questions?
+
+Respond ONLY with a JSON object in this exact format, no markdown, no preamble:
+{
+  "score": <integer 0-100>,
+  "issues": [
+    {"type": "issue", "text": "<specific problem that will prevent the agent from working>"},
+    {"type": "suggestion", "text": "<improvement that would help but is not blocking>"},
+    {"type": "ok", "text": "<something that is well-specified>"}
+  ],
+  "summary": "<1-2 sentence overall assessment and key recommendation>"
+}
+
+Use "issue" for blocking problems, "suggestion" for improvements, "ok" for things done well. Include 2-5 items total.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: localStorage.getItem('zyantik_model') || 'claude-sonnet-4-5',
+          max_tokens: 800,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || 'API error ' + res.status);
+      }
+
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const result = JSON.parse(clean);
+      renderAiResult(result);
+
+    } catch (e) {
+      showToast('AI check failed: ' + e.message);
+      btn.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm-.75 2.5v3.25l2.5 1.5.5-.87-2-1.2V5.5h-1z"/></svg> Run AI check';
+      btn.disabled = false;
+    }
+  }
+
+  function renderAiResult(result) {
+    const panel = document.getElementById('aiResult');
+    const header = document.getElementById('aiResultHeader');
+    const icon = document.getElementById('aiResultIcon');
+    const title = document.getElementById('aiResultTitle');
+    const scoreEl = document.getElementById('aiScore');
+    const issuesEl = document.getElementById('aiIssues');
+    const summaryEl = document.getElementById('aiSummary');
+    const warnBadge = document.getElementById('warnBadge');
+    const btn = document.getElementById('aiCheckBtn');
+
+    const score = Math.max(0, Math.min(100, result.score));
+    const issues = (result.issues || []).filter(i => i.type === 'issue');
+    const issueCount = issues.length;
+
+    // Score colour
+    scoreEl.textContent = score + '/100';
+    scoreEl.className = 'ai-score-value ' + (score >= 75 ? 'high' : score >= 50 ? 'mid' : 'low');
+
+    // Header state
+    header.className = 'ai-result-header ' + (issueCount === 0 ? 'pass' : score >= 50 ? 'warn' : 'err');
+    if (issueCount === 0) {
+      icon.innerHTML = '<path d="M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z"/>';
+      title.textContent = 'Ticket looks good — ready to download';
+    } else {
+      icon.innerHTML = '<path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a.5.5 0 01.5.5v4a.5.5 0 01-1 0v-4A.5.5 0 018 4zm0 7a.75.75 0 110 1.5A.75.75 0 018 11z"/>';
+      title.textContent = issueCount + ' issue' + (issueCount > 1 ? 's' : '') + ' found — review before downloading';
+    }
+
+    // Issues list
+    const typeIcon = { issue: '⚠', suggestion: '→', ok: '✓' };
+    issuesEl.innerHTML = (result.issues || []).map(item =>
+      `<div class="ai-issue ${item.type}"><span class="ai-issue-icon">${typeIcon[item.type] || '·'}</span><span>${item.text}</span></div>`
+    ).join('');
+
+    summaryEl.textContent = result.summary || '';
+    panel.classList.add('visible');
+
+    // Warn badge on download button
+    if (issueCount > 0) {
+      warnBadge.textContent = issueCount;
+      warnBadge.classList.add('visible');
+    } else {
+      warnBadge.classList.remove('visible');
+    }
+
+    // Reset AI check button
+    btn.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm-.75 2.5v3.25l2.5 1.5.5-.87-2-1.2V5.5h-1z"/></svg> Re-check';
+    btn.disabled = false;
+  }
+
   update();
-</script>
+  loadSettings();
 </body>
 </html>
