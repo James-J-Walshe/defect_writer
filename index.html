@@ -390,7 +390,6 @@
     background: var(--brand);
     color: white;
     border-color: var(--brand);
-    flex: 1;
     justify-content: center;
   }
 
@@ -540,7 +539,6 @@
     background: #1d4ed8;
     color: white;
     border-color: #1d4ed8;
-    flex: 1;
     justify-content: center;
   }
   .btn-ai:hover { background: #1e40af; border-color: #1e40af; }
@@ -557,8 +555,7 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Warning badge on download button */
-  .btn-wrap { position: relative; display: flex; flex: 1; }
-  .btn-wrap .btn { flex: 1; }
+  .btn-wrap { position: relative; display: inline-flex; }
   .warn-badge {
     position: absolute;
     top: -7px; right: -7px;
@@ -730,14 +727,14 @@
           <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2a5 5 0 110 10A5 5 0 018 3zm-.75 2.5v3.25l2.5 1.5.5-.87-2-1.2V5.5h-1z"/></svg>
           Run AI check
         </button>
-        <div class="btn-wrap">
-          <button class="btn btn-primary" id="downloadBtn" onclick="downloadAll()">
+        <div class="btn-wrap" style="flex:1">
+          <button class="btn btn-primary" id="downloadBtn" onclick="downloadAll()" style="width:100%">
             <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a1 1 0 011 1v6.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L7 8.586V2a1 1 0 011-1zM3 13a1 1 0 000 2h10a1 1 0 000-2H3z"/></svg>
             Download
           </button>
           <div class="warn-badge" id="warnBadge"></div>
         </div>
-        <button class="btn" onclick="copyTicket()" title="Copy markdown">
+        <button class="btn" onclick="copyTicket()" title="Copy markdown" style="flex-shrink:0">
           <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2a2 2 0 00-2 2v8a2 2 0 002 2h5a2 2 0 002-2V8l-4-4H4zm5 0l4 4h-3a1 1 0 01-1-1V2zM6 6a1 1 0 000 2h4a1 1 0 000-2H6zm0 3a1 1 0 000 2h3a1 1 0 000-2H6z"/></svg>
         </button>
       </div>
