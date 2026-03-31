@@ -1118,33 +1118,30 @@ ${stepsLines}
     const md = buildMarkdown();
     const hasScreenshots = screenshots.some(s => s.imageDataUrl);
 
-    const prompt = `You are a quality reviewer for software defect tickets that will be processed by an AI agent pipeline. Review this defect ticket and evaluate its quality.
+    const screenshotCount = screenshots.filter(s => s.imageDataUrl).length;
+    const screenshotStatus = hasScreenshots ? 'Yes (' + screenshotCount + ' image(s))' : 'No';
 
-DEFECT TICKET:
-${md}
-
-SCREENSHOTS ATTACHED: ${hasScreenshots ? 'Yes (' + screenshots.filter(s => s.imageDataUrl).length + ' image(s))' : 'No'}
-
-Evaluate the ticket on these criteria:
-1. Description clarity — is the defect specific and unambiguous?
-2. Page/tab specified — does the agent know exactly where to look?
-3. Steps to reproduce — are they present, sequential and complete?
-4. Expected vs actual behaviour — is it clear what should happen vs what does?
-5. Screenshot quality — are images attached and labels meaningful?
-6. Agent actionability — can an AI agent act on this without asking follow-up questions?
-
-Respond ONLY with a JSON object in this exact format, no markdown, no preamble:
-{
-  "score": <integer 0-100>,
-  "issues": [
-    {"type": "issue", "text": "<specific problem that will prevent the agent from working>"},
-    {"type": "suggestion", "text": "<improvement that would help but is not blocking>"},
-    {"type": "ok", "text": "<something that is well-specified>"}
-  ],
-  "summary": "<1-2 sentence overall assessment and key recommendation>"
-}
-
-Use "issue" for blocking problems, "suggestion" for improvements, "ok" for things done well. Include 2-5 items total.`;
+    const prompt = 'You are a quality reviewer for software defect tickets that will be processed by an AI agent pipeline. Review this defect ticket and evaluate its quality.\n\n'
+      + 'DEFECT TICKET:\n' + md + '\n\n'
+      + 'SCREENSHOTS ATTACHED: ' + screenshotStatus + '\n\n'
+      + 'Evaluate the ticket on these criteria:\n'
+      + '1. Description clarity - is the defect specific and unambiguous?\n'
+      + '2. Page/tab specified - does the agent know exactly where to look?\n'
+      + '3. Steps to reproduce - are they present, sequential and complete?\n'
+      + '4. Expected vs actual behaviour - is it clear what should happen vs what does?\n'
+      + '5. Screenshot quality - are images attached and labels meaningful?\n'
+      + '6. Agent actionability - can an AI agent act on this without asking follow-up questions?\n\n'
+      + 'Respond ONLY with a JSON object in this exact format, no markdown, no preamble:\n'
+      + '{\n'
+      + '  "score": <integer 0-100>,\n'
+      + '  "issues": [\n'
+      + '    {"type": "issue", "text": "<specific problem that will prevent the agent from working>"},\n'
+      + '    {"type": "suggestion", "text": "<improvement that would help but is not blocking>"},\n'
+      + '    {"type": "ok", "text": "<something that is well-specified>"}\n'
+      + '  ],\n'
+      + '  "summary": "<1-2 sentence overall assessment and key recommendation>"\n'
+      + '}\n\n'
+      + 'Use "issue" for blocking problems, "suggestion" for improvements, "ok" for things done well. Include 2-5 items total.';
 
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
