@@ -749,6 +749,51 @@
   let screenshots = [{ label: '', imageDataUrl: null, imageExt: 'png' }];
   let activeSlot = 0;
 
+  // ── Settings ─────────────────────────────────────────────────────────────
+
+  function toggleSettings() {
+    const bar = document.getElementById('settingsBar');
+    const btn = document.getElementById('settingsToggle');
+    const open = bar.classList.toggle('open');
+    btn.classList.toggle('active', open);
+  }
+
+  function saveSettings() {
+    const key = document.getElementById('apiKey').value.trim();
+    const model = document.getElementById('modelSelect').value;
+    localStorage.setItem('zyantik_api_key', key);
+    localStorage.setItem('zyantik_model', model);
+    updateSettingsStatus(key);
+  }
+
+  function loadSettings() {
+    const key = localStorage.getItem('zyantik_api_key') || '';
+    const model = localStorage.getItem('zyantik_model') || 'claude-sonnet-4-5';
+    document.getElementById('apiKey').value = key;
+    document.getElementById('modelSelect').value = model;
+    updateSettingsStatus(key);
+  }
+
+  function updateSettingsStatus(key) {
+    const dot = document.getElementById('settingsDot');
+    const text = document.getElementById('settingsStatusText');
+    const btn = document.getElementById('aiCheckBtn');
+    if (!btn) return;
+    if (key && key.startsWith('sk-ant-')) {
+      dot.className = 'settings-dot ok';
+      text.textContent = 'API key configured — AI check enabled';
+      btn.disabled = false;
+    } else if (key) {
+      dot.className = 'settings-dot err';
+      text.textContent = 'Key format looks incorrect — should start with sk-ant-';
+      btn.disabled = true;
+    } else {
+      dot.className = 'settings-dot';
+      text.textContent = 'Enter your API key to enable AI quality check';
+      btn.disabled = true;
+    }
+  }
+
   function pad(n) { return String(n).padStart(3, '0'); }
 
   function slug(str) {
@@ -1059,50 +1104,6 @@ ${stepsLines}
       }
     }
   });
-
-  // ── Settings ─────────────────────────────────────────────────────────────
-
-  function toggleSettings() {
-    const bar = document.getElementById('settingsBar');
-    const btn = document.getElementById('settingsToggle');
-    const open = bar.classList.toggle('open');
-    btn.classList.toggle('active', open);
-  }
-
-  function saveSettings() {
-    const key = document.getElementById('apiKey').value.trim();
-    const model = document.getElementById('modelSelect').value;
-    localStorage.setItem('zyantik_api_key', key);
-    localStorage.setItem('zyantik_model', model);
-    updateSettingsStatus(key);
-  }
-
-  function loadSettings() {
-    const key = localStorage.getItem('zyantik_api_key') || '';
-    const model = localStorage.getItem('zyantik_model') || 'claude-sonnet-4-5';
-    document.getElementById('apiKey').value = key;
-    document.getElementById('modelSelect').value = model;
-    updateSettingsStatus(key);
-  }
-
-  function updateSettingsStatus(key) {
-    const dot = document.getElementById('settingsDot');
-    const text = document.getElementById('settingsStatusText');
-    const btn = document.getElementById('aiCheckBtn');
-    if (key && key.startsWith('sk-ant-')) {
-      dot.className = 'settings-dot ok';
-      text.textContent = 'API key configured — AI check enabled';
-      btn.disabled = false;
-    } else if (key) {
-      dot.className = 'settings-dot err';
-      text.textContent = 'Key format looks incorrect — should start with sk-ant-';
-      btn.disabled = true;
-    } else {
-      dot.className = 'settings-dot';
-      text.textContent = 'Enter your API key to enable AI quality check';
-      btn.disabled = true;
-    }
-  }
 
   // ── AI quality check ─────────────────────────────────────────────────────
 
